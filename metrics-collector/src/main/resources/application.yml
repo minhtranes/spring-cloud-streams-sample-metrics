@@ -1,0 +1,41 @@
+spring:
+  application.name: collector
+  cloud:
+    function.definition: collect
+    stream:
+      metrics.properties: spring.cloud.*
+      binders:
+        kafka1:
+          type: kafka
+          environment:
+            spring:
+              cloud:
+                stream:
+                  kafka:
+                    binder:
+                      brokers: 192.168.56.4:9092
+      bindings:
+        collect-in-0:
+          binder: kafka1
+          destination: process-metrics
+          group: report
+          
+      kafka:
+          binder:
+              configuration:
+                isolation.level: read_committed
+
+server.port: 9995
+logging:
+  file:
+    name: ./logs/${spring.application.name}.log
+    max-size: 1MB
+    total-size-cap: 3MB
+    max-history: 2
+    clean-history-on-start: false
+  pattern.rolling-file-name: ./logs/${spring.application.name}-%d{yyyy-MM-dd}.%i.log
+  level:
+    org.apache.kafka.clients: info
+management.endpoints:
+  enabled-by-default: true
+  web.exposure.include: '*'

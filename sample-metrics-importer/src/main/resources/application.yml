@@ -1,0 +1,60 @@
+spring:
+  boot.admin.client:
+    url: http://localhost:8089
+    instance:
+      service-base-url: http://localhost:${server.port}/
+      prefer-ip: false
+  application.name: http-importer
+  cloud:
+    stream:
+      metrics.properties: spring.cloud.*
+      kafka:
+        bindings:
+          supplier-out-0:
+            producer:
+              topic.properties:
+                retention.ms: 600000
+      binders:
+        kafka1:
+          type: kafka
+          environment:
+            spring:
+              cloud:
+                stream:
+                  kafka:
+                    binder:
+                      brokers: 192.168.56.4:9092
+      bindings:
+        applicationMetrics.destination: process-metrics
+        supplier-out-0:
+          binder: kafka1
+          destination: extraction-requests
+server.port: 9997
+logging:
+  file:
+    name: ./logs/${spring.application.name}.log
+    max-size: 1MB
+    total-size-cap: 3MB
+    max-history: 2
+    clean-history-on-start: false
+  pattern.rolling-file-name: ./logs/${spring.application.name}-%d{yyyy-MM-dd}.%i.log
+  level:
+    org.apache.kafka.clients: info
+management:
+  metrics:
+    export:
+      atlas:
+        enabled: true
+        step: 5s
+        uri: "http://localhost:7101/api/v1/publish"
+  endpoints:
+    health.binders.enabled: true
+    enabled-by-default: true
+    web:
+      exposure.include: '*'
+      cors:
+        allowed-origins: '*'
+        allowed-methods: "GET,POST,PUT"
+    jmx.exposure.include: '*'
+  endpoint:
+    health.show-details: always

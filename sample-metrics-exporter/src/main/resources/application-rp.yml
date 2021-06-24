@@ -1,0 +1,9 @@
+server.port: 10000
+sleep.time.second: 0
+spring:
+  application.name: exporterrp
+  cloud:
+    stream:
+      bindings:
+        read-in-0:
+          group: report
