@@ -44,7 +44,7 @@ spring:
                  retention.ms: 600000
         binder:
           transaction:
-            transaction-id-prefix: extract1-
+            transaction-id-prefix: extract-
             producer:
               configuration:
                 max.in.flight.requests.per.connection: 1
